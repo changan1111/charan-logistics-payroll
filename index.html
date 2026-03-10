@@ -894,7 +894,11 @@ function renderTable(hist){
 
   const names=new Set(hist.map(r=>r.name).filter(Boolean));
   const totalPaid=hist.reduce((a,r)=>a+(+r.net||0),0);
-  const latestM=hist.map(r=>cleanMonth(r.month)).filter(Boolean).sort().reverse()[0];
+const months = hist.map(r => cleanMonth(r.month));
+console.log('All cleaned months:', months); // check in console
+const latestM = months.filter(Boolean).sort().reverse()[0];
+console.log('Latest month:', latestM);
+$('hs_latest').textContent = latestM ? fmtMonth(latestM) : '—';
   $('hs_records').textContent=hist.length;
   $('hs_emp').textContent=names.size;
   $('hs_paid').textContent='S$ '+totalPaid.toLocaleString('en',{maximumFractionDigits:0});
