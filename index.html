@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charan Logistics — Documents Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--ink:#1a1a2e;--gold:#c9a84c;--gold-light:#f0d080;--cream:#faf7f0;--sage:#4a6741;--border:#d4c9a8;--shadow:rgba(26,26,46,0.12);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+/* HEADER */
+header{background:var(--ink);}
+.hdr-img img{width:100%;max-height:160px;object-fit:cover;display:block;}
+.hdr-fallback{display:none;padding:28px 32px 22px;}
+.hdr-fallback.show{display:block;}
+.logo-line{display:flex;align-items:center;gap:14px;margin-bottom:5px;}
+.logo-icon{width:42px;height:42px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+header h1{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff;}
+header h1 span{color:var(--gold);}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:.1em;text-transform:uppercase;margin-left:56px;}
+
+/* TABS */
+.tab-bar{background:var(--ink);border-top:1px solid rgba(255,255,255,0.08);}
+.tab-bar-inner{max-width:980px;margin:0 auto;padding:0 28px;display:flex;gap:2px;}
+.tab-btn{padding:13px 22px;background:none;border:none;color:rgba(255,255,255,0.45);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;}
+.tab-btn:hover{color:rgba(255,255,255,.75);}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.badge{background:var(--gold);color:var(--ink);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:5px;display:none;}
+.badge.show{display:inline;}
+
+/* MAIN */
+.main{max-width:980px;margin:0 auto;padding:36px 28px;}
+.panel{display:none;}
+.panel.active{display:block;animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARD */
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin-bottom:18px;box-shadow:0 2px 10px var(--shadow);}
+.card-title{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--gold);display:inline-block;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px;}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field.span2{grid-column:span 2;}
+label{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#7a6e58;}
+input,select,textarea{width:100%;padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--ink);background:var(--cream);transition:border-color .2s;outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15);background:#fff;}
+textarea{resize:vertical;min-height:60px;}
+
+/* SUMMARY */
+.summary-row{display:flex;justify-content:space-around;padding:14px 0 4px;border-top:2px solid var(--border);}
+.sum-item{text-align:center;}
+.sum-label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#7a6e58;}
+.sum-val{font-size:19px;font-weight:700;font-family:'Playfair Display',serif;color:var(--ink);}
+.sum-val.gold{color:var(--gold);font-size:22px;}
+
+/* BUTTONS */
+.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:6px;}
+.btn{padding:11px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:7px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;}
+.btn-dark{background:var(--ink);color:#fff;}  .btn-dark:hover{background:#2d2d4e;transform:translateY(-1px);}
+.btn-green{background:var(--sage);color:#fff;} .btn-green:hover{background:#3a5432;transform:translateY(-1px);}
+.btn-gold{background:var(--gold);color:var(--ink);} .btn-gold:hover{background:var(--gold-light);transform:translateY(-1px);}
+.btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--ink);} .btn-outline:hover{border-color:var(--ink);}
+.btn-outline-red{background:#fff;border:1.5px solid #e57373;color:#c0392b;} .btn-outline-red:hover{background:#c0392b;color:#fff;}
+.btn-sm{padding:7px 14px;font-size:12px;}
+
+/* EDIT MODE BANNER */
+.edit-banner{background:linear-gradient(135deg,#fff3d4,#ffe9a0);border:2px solid var(--gold);border-radius:10px;padding:12px 18px;margin-bottom:18px;display:none;align-items:center;gap:12px;justify-content:space-between;}
+.edit-banner.show{display:flex;}
+.edit-banner-text{font-size:13.5px;font-weight:600;color:#7a5c10;}
+.edit-banner-sub{font-size:12px;color:#a07830;margin-top:2px;}
+
+/* INFO NOTE */
+.info-note{background:linear-gradient(135deg,#fff9ec,#fff3d4);border:1px solid var(--gold);border-radius:8px;padding:12px 16px;font-size:12.5px;color:#7a5c10;margin-bottom:18px;}
+.warn-note{background:#fdecea;border:1px solid #e57373;border-radius:8px;padding:12px 16px;font-size:12.5px;color:#c62828;margin-bottom:18px;}
+
+/* QUOTATION TABLE */
+.items-table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:13px;}
+.items-table th{background:var(--ink);color:var(--gold);padding:9px 11px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.items-table td{padding:7px 11px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.items-table tr:nth-child(even) td{background:var(--cream);}
+.items-table input{padding:6px 9px;font-size:13px;}
+.add-row-btn{background:none;border:1.5px dashed var(--gold);color:var(--gold);padding:7px 16px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all .2s;margin-top:4px;}
+.add-row-btn:hover{background:rgba(201,168,76,.1);}
+.del-btn{background:none;border:none;cursor:pointer;color:#c0392b;font-size:15px;padding:3px 6px;}
+.totals-row{display:flex;justify-content:flex-end;gap:36px;padding:14px 0 4px;border-top:2px solid var(--border);margin-top:6px;}
+.total-item{text-align:right;}
+.total-label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#7a6e58;}
+.total-value{font-size:19px;font-weight:700;font-family:'Playfair Display',serif;color:var(--ink);}
+.total-value.grand{color:var(--gold);font-size:22px;}
+
+/* SETTINGS — STEPS */
+.steps-list{counter-reset:step;list-style:none;margin:0;padding:0;}
+.steps-list li{counter-increment:step;display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;font-size:13.5px;line-height:1.6;}
+.steps-list li::before{content:counter(step);background:var(--gold);color:var(--ink);min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.code-block{background:#1a1a2e;color:#c9a84c;border-radius:8px;padding:14px 16px;font-family:monospace;font-size:12px;margin:8px 0;width:100%;white-space:pre-wrap;word-break:break-all;border:none;resize:none;cursor:pointer;line-height:1.5;}
+.tag{display:inline-block;background:#e8f4ec;color:var(--sage);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:600;margin-left:4px;}
+.tag.red{background:#fdecea;color:#c62828;}
+.tag.gold{background:#fff3d4;color:#7a5c10;}
+
+/* CONNECTION STATUS CARD */
+.conn-card{display:none;border-radius:10px;padding:14px 18px;margin-bottom:18px;border:2px solid;}
+.conn-card.show{display:flex;align-items:center;gap:12px;}
+.conn-card.ok{background:#f0faf0;border-color:var(--sage);}
+.conn-card.err{background:#fdecea;border-color:#e57373;}
+.conn-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.conn-dot.ok{background:var(--sage);box-shadow:0 0 8px rgba(74,103,65,.5);animation:pulse 2s infinite;}
+.conn-dot.err{background:#e53935;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* HISTORY STATS */
+.hist-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.hstat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:0 2px 8px var(--shadow);border-left:4px solid var(--gold);}
+.hstat-val{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--ink);}
+.hstat-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#7a6e58;margin-top:3px;}
+
+/* HISTORY TABLE */
+.filter-row{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;}
+.hist-table{width:100%;border-collapse:collapse;font-size:13px;}
+.hist-table thead th{background:var(--ink);color:var(--gold);padding:10px 13px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;cursor:pointer;user-select:none;}
+.hist-table thead th:hover{background:#2d2d4e;}
+.hist-table tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+.hist-table tbody tr:hover{background:#fffdf5;}
+.hist-table tbody tr:nth-child(even) td{background:var(--cream);}
+.hist-table tbody tr:nth-child(even):hover td{background:#fffdf5;}
+.hist-table td{padding:10px 13px;vertical-align:middle;}
+.month-pill{background:var(--ink);color:var(--gold);padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;}
+.ha-btn{border:none;border-radius:6px;padding:4px 9px;font-size:11.5px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15px;margin:0 2px;}
+.ha-edit{background:#e8f4ec;color:var(--sage);} .ha-edit:hover{background:var(--sage);color:#fff;}
+.ha-pdf{background:#e8eaf6;color:#3949ab;}     .ha-pdf:hover{background:#3949ab;color:#fff;}
+.totals-bar{background:var(--ink);color:#fff;padding:11px 18px;display:flex;justify-content:flex-end;gap:36px;font-size:12.5px;}
+.totals-bar span{color:rgba(255,255,255,.5);}
+.totals-bar strong.g{color:var(--gold);}
+.empty-state{padding:48px;text-align:center;}
+.empty-state .icon{font-size:48px;margin-bottom:12px;}
+.empty-state .title{font-size:15px;font-weight:600;color:#888;}
+.empty-state .sub{font-size:13px;margin-top:6px;color:#bbb;}
+
+/* SYNC STATUS */
+.sync-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 18px;box-shadow:0 2px 8px var(--shadow);}
+.sync-left{display:flex;align-items:center;gap:9px;font-size:13px;color:#555;}
+.sync-right{display:flex;align-items:center;gap:8px;}
+.sdot{width:11px;height:11px;border-radius:50%;background:#ccc;flex-shrink:0;transition:all .4s;}
+.sdot.ok{background:#4caf50;box-shadow:0 0 6px rgba(76,175,80,.5);}
+.sdot.spin{background:var(--gold);box-shadow:0 0 8px rgba(201,168,76,.7);animation:pulse 1s infinite;}
+.sdot.err{background:#e53935;box-shadow:0 0 6px rgba(229,57,53,.5);}
+.sdot.warn{background:#ff9800;}
+
+/* SPINNER */
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px;}
+.spinner.dark{border-color:rgba(0,0,0,.15);border-top-color:var(--ink);}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SITE FOOTER */
+.site-footer{background:var(--ink);line-height:0;margin-top:40px;}
+.site-footer img{width:100%;max-height:110px;object-fit:cover;display:block;}
+.footer-fallback{display:none;padding:16px 28px;text-align:center;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.06em;}
+.footer-fallback.show{display:block;}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:500;box-shadow:0 8px 28px rgba(0,0,0,.25);transform:translateY(70px);opacity:0;transition:all .32s cubic-bezier(.34,1.56,.64,1);z-index:9999;display:flex;align-items:center;gap:9px;border-left:4px solid var(--gold);max-width:400px;}
+#toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:640px){
+  .main{padding:20px 14px;}
+  .form-grid,.form-grid.three{grid-template-columns:1fr;}
+  .field.span2{grid-column:span 1;}
+  .hist-stats{grid-template-columns:1fr 1fr;}
+  .tab-btn{padding:11px 12px;font-size:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr-img">
+    <img src="header.png" alt="Charan Logistics" onerror="this.style.display='none';document.querySelector('.hdr-fallback').classList.add('show')">
+  </div>
+  <div class="hdr-fallback">
+    <div class="logo-line">
+      <div class="logo-icon">🚚</div>
+      <h1>CHARAN <span>LOGISTICS</span> PTE LTD</h1>
+    </div>
+    <div class="hdr-sub">101 Kitchener Road #03-14 · Singapore 208511 · Reg No: 202502540D</div>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="showTab('salary',this)">📄 Salary Slip</button>
+    <button class="tab-btn" onclick="showTab('quotation',this)">📋 Quotation</button>
+    <button class="tab-btn" onclick="showTab('history',this)">📊 History <span class="badge" id="hist-badge">0</span></button>
+    <button class="tab-btn" onclick="showTab('settings',this)">⚙️ Settings</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══════════ SALARY TAB ══════════ -->
+<div id="panel-salary" class="panel active">
+
+  <!-- EDIT MODE BANNER -->
+  <div class="edit-banner" id="edit-banner">
+    <div>
+      <div class="edit-banner-text">✏️ Editing Record: <span id="edit-banner-name"></span></div>
+      <div class="edit-banner-sub">Make your changes and click "Update Record" to save. Or cancel to discard.</div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="cancelEdit()">✕ Cancel Edit</button>
+  </div>
+
+  <div id="sal-warn" class="warn-note" style="display:none">
+    ⚠️ Google Sheets not connected. Go to <strong>⚙️ Settings</strong> to connect — takes 5 minutes, then everything saves automatically.
+  </div>
+  <div id="sal-ok" class="info-note" style="display:none">
+    ✅ Connected to Google Sheets — salary slips save automatically in real-time.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Employee Details</div>
+    <div class="form-grid">
+      <div class="field"><label>Employee Name</label><input type="text" id="s_name" placeholder="Full Name"></div>
+      <div class="field"><label>NRIC No.</label><input type="text" id="s_nric" placeholder="e.g. S1234567A"></div>
+      <div class="field"><label>Designation</label><input type="text" id="s_desig" placeholder="e.g. Driver"></div>
+      <div class="field"><label>Salary Month</label><input type="month" id="s_month" placeholder="Select month"></div>
+      <div class="field"><label>Payment Date</label><input type="date" id="s_paydate"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Earnings</div>
+    <div class="form-grid three">
+      <div class="field"><label>Basic Pay (S$)</label><input type="number" id="s_basic" placeholder="0.00" min="0" step="0.01" oninput="calcSalary()"></div>
+      <div class="field"><label>Overtime (S$)</label><input type="number" id="s_ot" placeholder="0.00" min="0" step="0.01" oninput="calcSalary()"></div>
+      <div class="field"><label>Commission (S$)</label><input type="number" id="s_comm" placeholder="0.00" min="0" step="0.01" oninput="calcSalary()"></div>
+      <div class="field"><label>Allowance (S$)</label><input type="number" id="s_allow" placeholder="0.00" min="0" step="0.01" oninput="calcSalary()"></div>
+      <div class="field"><label>Other Earnings (S$)</label><input type="number" id="s_earn_other" placeholder="0.00" min="0" step="0.01" oninput="calcSalary()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Deductions</div>
+    <div class="form-grid three">
+      <div class="field"><label>CPF Employee (S$)</label><input type="number" id="s_cpf" placeholder="0.00" min="0" step="0.01" oninput="calcSalary()"></div>
+      <div class="field"><label>SDL / SHG (S$)</label><input type="number" id="s_sdl" placeholder="0.00" min="0" step="0.01" oninput="calcSalary()"></div>
+      <div class="field"><label>Other Deductions (S$)</label><input type="number" id="s_ded_other" placeholder="0.00" min="0" step="0.01" oninput="calcSalary()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Summary</div>
+    <div class="summary-row">
+      <div class="sum-item"><div class="sum-label">Total Earnings</div><div class="sum-val" id="s_total_earn">S$ 0.00</div></div>
+      <div class="sum-item"><div class="sum-label">Total Deductions</div><div class="sum-val" id="s_total_ded">S$ 0.00</div></div>
+      <div class="sum-item"><div class="sum-label">Net Salary Payable</div><div class="sum-val gold" id="s_net">S$ 0.00</div></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-green" id="btn-save" onclick="saveToHistory()">💾 Save to Google Sheets</button>
+    <button class="btn btn-dark" onclick="genSalaryPDF()">⬇ Download PDF</button>
+  </div>
+</div>
+
+<!-- ══════════ QUOTATION TAB ══════════ -->
+<div id="panel-quotation" class="panel">
+  <div class="info-note">💡 Fill quotation details and line items — export as PDF and/or Excel.</div>
+  <div class="card">
+    <div class="card-title">Quotation Info</div>
+    <div class="form-grid">
+      <div class="field"><label>Quotation No.</label><input type="text" id="q_num" placeholder="e.g. QT-2025-001"></div>
+      <div class="field"><label>Date</label><input type="date" id="q_date"></div>
+      <div class="field span2"><label>Client Name / Company</label><input type="text" id="q_client" placeholder="e.g. Mr. Dean / ABC Pte Ltd"></div>
+      <div class="field span2"><label>Client Address</label><textarea id="q_addr" rows="2" placeholder="Full address..."></textarea></div>
+      <div class="field span2"><label>Notes / Working Hours / Terms</label><textarea id="q_notes" rows="2" placeholder="e.g. Working hours: Mon–Fri 8am–6pm, Sat 8am–1pm"></textarea></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Line Items</div>
+    <table class="items-table">
+      <thead><tr>
+        <th style="width:42px">No.</th><th>Description</th>
+        <th style="width:130px;text-align:right">Unit Price (S$)</th>
+        <th style="width:70px;text-align:right">Qty</th>
+        <th style="width:130px;text-align:right">Total (S$)</th>
+        <th style="width:38px"></th>
+      </tr></thead>
+      <tbody id="q_body"></tbody>
+    </table>
+    <button class="add-row-btn" onclick="addItem()">+ Add Item</button>
+    <div class="totals-row">
+      <div class="total-item"><div class="total-label">Subtotal</div><div class="total-value" id="q_sub">S$ 0.00</div></div>
+      <div class="total-item">
+        <div class="total-label">GST 9% <input type="checkbox" id="q_gst" onchange="calcQ()" style="width:auto;margin-left:4px;transform:scale(1.2);vertical-align:middle"></div>
+        <div class="total-value" id="q_gst_val">S$ 0.00</div>
+      </div>
+      <div class="total-item"><div class="total-label">Grand Total</div><div class="total-value grand" id="q_grand">S$ 0.00</div></div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-dark" onclick="genQuotPDF()">⬇ Download PDF</button>
+  </div>
+</div>
+
+<!-- ══════════ HISTORY TAB ══════════ -->
+<div id="panel-history" class="panel">
+  <div class="hist-stats">
+    <div class="hstat"><div class="hstat-val" id="hs_records">—</div><div class="hstat-lbl">Total Records</div></div>
+    <div class="hstat"><div class="hstat-val" id="hs_emp">—</div><div class="hstat-lbl">Employees</div></div>
+    <div class="hstat"><div class="hstat-val" id="hs_paid">—</div><div class="hstat-lbl">Total Paid</div></div>
+    <div class="hstat"><div class="hstat-val" id="hs_latest">—</div><div class="hstat-lbl">Latest Month</div></div>
+  </div>
+
+  <div class="card" style="padding:16px 22px">
+    <div class="filter-row">
+      <div class="field" style="flex:1.4"><label>🔍 Search Employee</label><input type="text" id="hf_name" placeholder="Type name..." oninput="applyFilters()"></div>
+      <div class="field" style="flex:1"><label>📅 Month</label><input type="month" id="hf_month" onchange="applyFilters()"></div>
+      <div class="field" style="flex:.8"><label>📋 Year</label><select id="hf_year" onchange="applyFilters()"><option value="">All Years</option></select></div>
+      <div class="field" style="flex:.5;justify-content:flex-end;padding-top:20px">
+        <button class="add-row-btn btn-sm" onclick="clearFilters()">✕ Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div id="h_empty" class="empty-state" style="display:none">
+      <div class="icon">📭</div>
+      <div class="title">No records yet</div>
+      <div class="sub">Save a salary slip to see it here</div>
+    </div>
+    <div id="h_loading" class="empty-state">
+      <div style="font-size:36px;margin-bottom:10px">⏳</div>
+      <div class="title">Loading from Google Sheets...</div>
+      <div class="sub">Please wait</div>
+    </div>
+    <div id="h_table_wrap" style="overflow-x:auto;display:none">
+      <table class="hist-table">
+        <thead><tr>
+          <th onclick="sortBy('month')">Month ↕</th>
+          <th onclick="sortBy('name')">Employee ↕</th>
+          <th>Designation</th>
+          <th style="text-align:right" onclick="sortBy('earn')">Earnings ↕</th>
+          <th style="text-align:right">Deductions</th>
+          <th style="text-align:right" onclick="sortBy('net')">Net Pay ↕</th>
+          <th style="text-align:right">Saved On</th>
+          <th style="text-align:center">Actions</th>
+        </tr></thead>
+        <tbody id="h_tbody"></tbody>
+      </table>
+    </div>
+    <div id="h_totals" class="totals-bar" style="display:none">
+      <div><span>Showing: </span><strong id="hb_count">0</strong></div>
+      <div><span>Earnings: </span><strong id="hb_earn">S$ 0.00</strong></div>
+      <div><span>Net Pay: </span><strong class="g" id="hb_net">S$ 0.00</strong></div>
+    </div>
+  </div>
+
+  <div class="sync-bar">
+    <div class="sync-left"><div class="sdot warn" id="sdot"></div><span id="sstatus">Connecting...</span></div>
+    <div class="sync-right"><button class="btn btn-outline btn-sm" onclick="fetchFromSheets(true)">🔄 Refresh</button></div>
+  </div>
+</div>
+
+<!-- ══════════ SETTINGS TAB ══════════ -->
+<div id="panel-settings" class="panel">
+
+  <div class="conn-card ok" id="conn-ok">
+    <div class="conn-dot ok"></div>
+    <div style="flex:1">
+      <strong style="color:var(--sage);font-size:15px">✅ Google Sheets Connected</strong>
+      <div style="font-size:12.5px;color:#555;margin-top:3px">All salary slips save instantly. History loads live from your sheet.</div>
+    </div>
+    <button class="btn btn-outline-red btn-sm" onclick="disconnect()">Disconnect</button>
+  </div>
+
+  <div class="conn-card err" id="conn-err">
+    <div class="conn-dot err"></div>
+    <div><strong style="color:#c62828">Not connected</strong><div style="font-size:12.5px;color:#555;margin-top:3px">Follow the steps below to connect.</div></div>
+  </div>
+<!--
+  <div class="card">
+    <div class="card-title">🔗 Connect Google Sheets — One Time Setup</div>
+    <ol class="steps-list">
+      <li>Go to <a href="https://sheets.new" target="_blank" style="color:var(--gold);font-weight:600">sheets.new</a> — a new Google Sheet will open. Name it <strong>"Charan Salary Data"</strong>.</li>
+      <li>In the menu, click <strong>Extensions</strong> → <strong>Apps Script</strong>. A new tab opens.</li>
+      <li>Delete everything in the editor. Then click the button below to copy the script, and <strong>paste it</strong> into the editor.
+        <div style="margin-top:10px">
+          <textarea id="script_ta" class="code-block" rows="8" readonly onclick="this.select()"></textarea>
+          <button class="btn btn-gold btn-sm" onclick="copyScript()" style="margin-top:6px">📋 Copy Script</button>
+          <span id="copy-done" style="display:none;color:var(--sage);font-size:12px;margin-left:10px">✅ Copied!</span>
+        </div>
+      </li>
+      <li>Click the 💾 <strong>Save</strong> icon (or Ctrl+S). Then click <strong>Deploy</strong> → <strong>New Deployment</strong>.</li>
+      <li>In the dialog:<br>
+        — <strong>Select type</strong>: <span class="tag">Web app</span><br>
+        — <strong>Execute as</strong>: <span class="tag">Me (your email)</span><br>
+        — <strong>Who has access</strong>: <span class="tag gold">Anyone</span><br>
+        Then click <strong>Deploy</strong>. Google will ask you to authorise — click <strong>Allow</strong>.
+      </li>
+      <li>Copy the <strong>Web App URL</strong> that appears. Paste it below and click Connect.</li>
+    </ol>
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <input type="url" id="gs_url_input" placeholder="Paste Web App URL here..." style="flex:1;font-family:monospace;font-size:12px">
+      <button class="btn btn-gold" id="btn-connect" onclick="connect()">🔗 Connect</button>
+    </div>
+    <div id="conn-msg" style="margin-top:10px;font-size:13px;display:none"></div>
+  </div>
+
+  <div class="card" id="gs-info" style="display:none">
+    <div class="card-title">How It Works</div>
+    <div style="font-size:13.5px;color:#444;line-height:2">
+      🟢 <strong>Save</strong> → instantly writes to your Google Sheet<br>
+      🟢 <strong>History tab</strong> → always loads live data from the sheet<br>
+      🟢 <strong>Any device</strong> → open the app on phone/laptop/tablet — same data everywhere<br>
+      🟢 <strong>No manual backup</strong> → data lives in Google Sheets permanently<br>
+      🟢 <strong>Your data</strong> → stored in your own Google account, nobody else has access
+    </div>
+  </div>
+</div>
+</div><!-- /main -->
+
+<div id="toast"><span id="toast_msg"></span></div>
+
+
+<script>
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const nv = id => parseFloat($(id).value)||0;
+const mf = v => 'S$ '+(parseFloat(v)||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const today = new Date().toISOString().slice(0,10);
+
+function toast(msg,dur=3500){
+  $('toast_msg').textContent=msg;
+  const t=$('toast'); t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+function showTab(name,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  $('panel-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='history') fetchFromSheets();
+  if(name==='settings') updateSettingsUI();
+}
+
+// ══════════════════════════════════════════
+// DATE HELPERS
+// ══════════════════════════════════════════
+function cleanMonth(raw){
+  if(!raw) return '';
+  const s = String(raw).trim();
+  if(s.length > 7){
+    const m = s.match(/^(\d{4})-(\d{2})/);
+    if(m) return m[1]+'-'+m[2];
+  }
+  return s.slice(0,7);
+}
+
+function cleanDate(raw){
+  if(!raw) return '';
+  const s = String(raw).trim();
+  if(s.length > 10){
+    const d = new Date(s);
+    if(!isNaN(d)){
+      const yyyy = d.getUTCFullYear();
+      const mm   = String(d.getUTCMonth()+1).padStart(2,'0');
+      const dd   = String(d.getUTCDate()).padStart(2,'0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+  }
+  return s.slice(0,10);
+}
+
+function fmtMonth(raw){
+  if(!raw) return '—';
+  const clean = cleanMonth(raw);
+  if(!clean) return '—';
+  const parts = clean.split('-');
+  if(parts.length >= 2){
+    const d = new Date(+parts[0], +parts[1]-1, 1);
+    if(!isNaN(d)) return d.toLocaleString('default',{month:'long',year:'numeric'});
+  }
+  return '—';
+}
+
+function fmtDate(raw){
+  if(!raw) return '—';
+  const clean = cleanDate(raw);
+  if(!clean) return '—';
+  const d = new Date(clean+'T12:00:00');
+  if(isNaN(d)) return clean;
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function todayReadable(){
+  return new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+// ══════════════════════════════════════════
+// EDIT STATE
+// ══════════════════════════════════════════
+let _editingId = null;  // null = new record
+
+function setEditMode(id, name, month) {
+  _editingId = String(id);
+  // Show banner
+  $('edit-banner').classList.add('show');
+  $('edit-banner-name').textContent = name + ' — ' + fmtMonth(month);
+  // Update save button
+  const btn = $('btn-save');
+  btn.innerHTML = '💾 Update Record';
+  btn.style.background = 'var(--gold)';
+  btn.style.color = 'var(--ink)';
+}
+
+function cancelEdit() {
+  clearForm();
+  toast('Edit cancelled');
+}
+
+// RUN THIS ON PAGE LOAD
+/*window.onload = function() {
+  if (isConnected()) {
+    updateSettingsUI();
+    updateSalaryTabUI();
+    // This tells the app to go grab data from the sheet immediately
+    if (typeof fetchFromSheets === "function") fetchFromSheets();
+  }
+};*/
+// ══════════════════════════════════════════
+// GOOGLE SHEETS CONNECTION
+// ══════════════════════════════════════════
+const CACHE_KEY = 'charan_gs_cache';
+const GS_KEY = 'charan_gs_url';
+const GH_SECRET_URL = '__WEBAPP_URL_PLACEHOLDER__';
+
+function getUrl() { 
+  // 1. If GitHub has injected the real URL, use it
+  if (GH_SECRET_URL.startsWith('https')) return GH_SECRET_URL;
+  // 2. Otherwise fall back to what was saved in Settings tab (for local testing)
+  return localStorage.getItem(GS_KEY) || '';
+}
+
+//function getUrl(){ return localStorage.getItem(GS_KEY)||''; }
+function isConnected(){ return !!getUrl(); }
+
+function updateSalaryTabUI(){
+  const ok = isConnected();
+  $('sal-warn').style.display = ok ? 'none' : 'block';
+  $('sal-ok').style.display   = ok ? 'block' : 'none';
+}
+
+function updateSettingsUI(){
+  const ok = isConnected();
+  $('conn-ok').classList.toggle('show', ok);
+  $('conn-err').classList.toggle('show', !ok);
+  $('gs-info').style.display = ok ? 'block' : 'none';
+  if(ok && $('gs_url_input')) $('gs_url_input').value = getUrl();
+}
+
+function setSyncStatus(state, msg){
+  const dot=$('sdot'), txt=$('sstatus');
+  if(dot) dot.className='sdot '+state;
+  if(txt) txt.textContent=msg;
+}
+
+async function connect(){
+  const url=$('gs_url_input').value.trim();
+  if(!url.includes('script.google.com')){
+    showConnMsg('❌ Please paste a valid Google Apps Script Web App URL','#c62828'); return;
+  }
+  showConnMsg('🔄 Testing connection...','#7a5c10');
+  $('btn-connect').disabled=true;
+  try{
+    const res = await fetch(url+'?action=ping&_='+Date.now());
+    const d   = await res.json();
+    if(d.status==='ok'){
+      localStorage.setItem(GS_KEY,url);
+      showConnMsg('✅ Connected! Salary slips now save to Google Sheets in real-time.','#2e7d32');
+      updateSettingsUI(); updateSalaryTabUI();
+      toast('🎉 Google Sheets connected! Everything is real-time now.');
+      fetchFromSheets();
+    } else {
+      showConnMsg('❌ Script responded but with an error. Re-deploy and try again.','#c62828');
+    }
+  }catch(e){
+    showConnMsg('❌ Cannot reach the URL. Make sure you set "Who has access" to Anyone and redeployed.','#c62828');
+  }
+  $('btn-connect').disabled=false;
+}
+
+function showConnMsg(msg,color){
+  const el=$('conn-msg'); el.style.display='block'; el.style.color=color; el.textContent=msg;
+}
+
+function disconnect(){
+  if(!confirm('Disconnect Google Sheets?')) return;
+  localStorage.removeItem(GS_KEY);
+  updateSettingsUI(); updateSalaryTabUI();
+  toast('Disconnected');
+}
+
+async function fetchFromSheets(manual=false){
+  if(!isConnected()){
+    setSyncStatus('warn','Not connected — go to ⚙️ Settings');
+    showHistState('notconnected'); return;
+  }
+  setSyncStatus('spin','Loading from Google Sheets...');
+  $('h_loading').style.display='block';
+  $('h_table_wrap').style.display='none';
+  $('h_empty').style.display='none';
+  $('h_totals').style.display='none';
+  try{
+    const res = await fetch(getUrl()+'?action=getAll&_='+Date.now());
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const recs = Array.isArray(data) ? data : (data.records||[]);
+    localStorage.setItem(CACHE_KEY, JSON.stringify(recs));
+    renderTable(recs);
+    const ts=new Date().toLocaleTimeString('en-SG',{hour:'2-digit',minute:'2-digit'});
+    setSyncStatus('ok',`Live from Google Sheets · ${recs.length} records · ${ts}`);
+    updateBadge(recs.length);
+    if(manual) toast(`✅ ${recs.length} records loaded`);
+  }catch(e){
+    setSyncStatus('err','Connection failed — showing cached data');
+    const cached=getCached();
+    if(cached.length){ renderTable(cached); if(manual) toast('⚠️ Using cached data — could not reach Sheets'); }
+    else { showHistState('error'); }
+  }
+}
+
+// ── KEY FIX: gsPost now uses a two-step approach ──
+// no-cors POST to trigger the write, then a GET to verify it happened.
+// This solves the "fire and forget" problem of no-cors.
+async function gsPost(payload){
+  if(!isConnected()) return false;
+  try{
+    // Step 1: Send the data (no-cors, can't read response — that's OK)
+    await fetch(getUrl(), {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    // Step 2: Wait briefly then do a GET ping to confirm the script is alive.
+    // We trust the POST went through if the script is reachable.
+    await new Promise(r => setTimeout(r, 800));
+    const check = await fetch(getUrl() + '?action=ping&_=' + Date.now());
+    const resp = await check.json();
+    return resp.status === 'ok';
+  } catch(e) {
+    console.error('gsPost error:', e);
+    return false;
+  }
+}
+
+function getCached(){
+  try{ return JSON.parse(localStorage.getItem(CACHE_KEY))||[]; }catch(e){ return []; }
+}
+
+function showHistState(state){
+  $('h_loading').style.display = state==='loading' ? 'block' : 'none';
+  $('h_empty').style.display   = state==='empty'   ? 'block' : 'none';
+  $('h_table_wrap').style.display = state==='table' ? 'block' : 'none';
+  if(state==='notconnected'){
+    $('h_loading').style.display='none';
+    $('h_empty').style.display='block';
+    $('h_empty').querySelector('.title').textContent='Not connected';
+    $('h_empty').querySelector('.sub').textContent='Go to ⚙️ Settings tab to connect Google Sheets';
+  } else if(state==='empty'){
+    $('h_empty').querySelector('.title').textContent='No records yet';
+    $('h_empty').querySelector('.sub').textContent='Save a salary slip to see it here';
+  } else if(state==='error'){
+    $('h_empty').style.display='block';
+    $('h_empty').querySelector('.title').textContent='Connection error';
+    $('h_empty').querySelector('.sub').textContent='Check your internet and Google Sheets connection';
+  }
+}
+
+// ══════════════════════════════════════════
+// SALARY CALC
+// ══════════════════════════════════════════
+function calcSalary(){
+  const earn=nv('s_basic')+nv('s_ot')+nv('s_comm')+nv('s_allow')+nv('s_earn_other');
+  const ded=nv('s_cpf')+nv('s_sdl')+nv('s_ded_other');
+  $('s_total_earn').textContent=mf(earn);
+  $('s_total_ded').textContent=mf(ded);
+  $('s_net').textContent=mf(earn-ded);
+}
+
+// ══════════════════════════════════════════
+// SAVE / UPDATE TO GOOGLE SHEETS — FIXED
+// ══════════════════════════════════════════
+async function saveToHistory(){
+  const name    = $('s_name').value.trim();
+  const nric    = $('s_nric').value.trim();
+  const desig   = $('s_desig').value.trim();
+  const paydate = $('s_paydate').value;
+  const month   = cleanMonth($('s_month').value);
+
+  if(!name)  { toast('⚠️ Enter employee name'); return; }
+  if(!month) { toast('⚠️ Select a salary month'); return; }
+  if(!isConnected()){
+    toast('⚠️ Connect Google Sheets first — go to ⚙️ Settings');
+    showTab('settings', document.querySelectorAll('.tab-btn')[3]);
+    return;
+  }
+
+  const basic=nv('s_basic'), ot=nv('s_ot'), comm=nv('s_comm'),
+        allow=nv('s_allow'), oe=nv('s_earn_other');
+  const cpf=nv('s_cpf'), sdl=nv('s_sdl'), od=nv('s_ded_other');
+  const earn=basic+ot+comm+allow+oe, ded=cpf+sdl+od, net=earn-ded;
+
+  const cached = getCached();
+  const isEditing = !!_editingId;
+
+  // ── Duplicate check: only for NEW records (not edits) ──
+  if(!isEditing){
+    const dup = cached.find(r =>
+      String(r.name||'').toLowerCase() === name.toLowerCase() &&
+      cleanMonth(r.month) === month
+    );
+    if(dup && !confirm(`A record for ${name} — ${fmtMonth(month)} already exists.\nOverwrite it?`)){
+      return;
+    }
+  }
+
+  // Determine record ID
+  const recordId = isEditing ? _editingId : String(Date.now());
+
+  const record = {
+    id: recordId,
+    name, nric, desig, month, paydate,
+    basic, ot, comm, allow, oe,
+    cpf, sdl, od,
+    earn, ded, net,
+    savedAt: todayReadable()
+  };
+
+  // ── Update button state ──
+  const btn = $('btn-save');
+  const origLabel = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>' + (isEditing ? 'Updating...' : 'Saving...');
+
+  // ── Choose action ──
+  // For edits: delete old row + save new row (atomic update via Apps Script)
+  // For new saves: just save
+  const action = isEditing ? 'update' : 'save';
+  const ok = await gsPost({ action, record });
+
+  btn.disabled = false;
+
+  if(ok){
+    // ── Update local cache immediately ──
+    let updated = cached.filter(r => {
+      if(isEditing) return String(r.id) !== _editingId;
+      // For new saves that overwrote a duplicate — remove old by name+month
+      return !(String(r.name||'').toLowerCase() === name.toLowerCase() && cleanMonth(r.month) === month);
+    });
+    updated.unshift(record);
+    updated.sort((a,b) => (cleanMonth(b.month)||'') > (cleanMonth(a.month)||'') ? 1 : -1);
+    localStorage.setItem(CACHE_KEY, JSON.stringify(updated));
+    updateBadge(updated.length);
+
+    const verb = isEditing ? 'Updated' : 'Saved';
+    toast(`✅ ${verb}: ${name} — ${fmtMonth(month)}`);
+
+    // ── Reset form and edit state ──
+    clearForm();
+
+    // Refresh history in background
+    setTimeout(() => fetchFromSheets(), 1500);
+  } else {
+    // Restore button on failure
+    btn.innerHTML = origLabel;
+    btn.style.background = isEditing ? 'var(--gold)' : '';
+    btn.style.color      = isEditing ? 'var(--ink)'  : '';
+    toast('❌ Save failed — check your internet connection and try again');
+  }
+}
+
+function clearForm(){
+  ['s_name','s_nric','s_desig','s_basic','s_ot','s_comm',
+   's_allow','s_earn_other','s_cpf','s_sdl','s_ded_other'].forEach(id => $(id).value = '');
+  $('s_month').value   = today.slice(0,7);
+  $('s_paydate').value = today;
+  calcSalary();
+
+  // Reset edit state
+  _editingId = null;
+  $('edit-banner').classList.remove('show');
+  const btn = $('btn-save');
+  btn.innerHTML = '💾 Save to Google Sheets';
+  btn.style.background = '';
+  btn.style.color = '';
+}
+
+function updateBadge(n){
+  const b=$('hist-badge');
+  if(n>0){b.textContent=n;b.classList.add('show');}
+  else b.classList.remove('show');
+}
+
+// ══════════════════════════════════════════
+// HISTORY TABLE
+// ══════════════════════════════════════════
+let sortCol='month', sortAsc=false;
+
+function renderTable(hist){
+  const nameF=($('hf_name')?.value||'').toLowerCase().trim();
+  const monF=cleanMonth($('hf_month')?.value||'');
+  const yearF=$('hf_year')?.value||'';
+
+  const years=[...new Set(hist.map(r=>cleanMonth(r.month).slice(0,4)).filter(Boolean))].sort().reverse();
+  const sel=$('hf_year'); const curY=sel.value;
+  sel.innerHTML='<option value="">All Years</option>'+years.map(y=>`<option value="${y}"${y===curY?' selected':''}>${y}</option>`).join('');
+
+  let f=hist.filter(r=>{
+    const rm = cleanMonth(r.month);
+    if(nameF && !String(r.name||'').toLowerCase().includes(nameF)) return false;
+    if(monF  && rm!==monF) return false;
+    if(yearF && !rm.startsWith(yearF)) return false;
+    return true;
+  });
+
+  f.sort((a,b)=>{
+    let va,vb;
+    if(sortCol==='month')     { va=cleanMonth(a.month); vb=cleanMonth(b.month); }
+    else if(sortCol==='name') { va=String(a.name||'').toLowerCase(); vb=String(b.name||'').toLowerCase(); }
+    else if(sortCol==='earn') { va=+a.earn; vb=+b.earn; }
+    else                      { va=+a.net;  vb=+b.net; }
+    return sortAsc?(va<vb?-1:va>vb?1:0):(va>vb?-1:va<vb?1:0);
+  });
+
+  $('h_loading').style.display='none';
+
+  if(hist.length===0){
+    showHistState('empty');
+    $('h_totals').style.display='none';
+  } else {
+    showHistState('table');
+    $('h_totals').style.display='flex';
+  }
+
+  $('h_tbody').innerHTML=f.map(r=>`
+    <tr>
+      <td>
+        <span class="month-pill">${cleanMonth(r.month)}</span><br>
+        <small style="color:#aaa;font-size:10.5px">${fmtMonth(r.month)}</small>
+      </td>
+      <td><strong>${r.name||''}</strong><br><small style="color:#999;font-size:10.5px">${r.nric||''}</small></td>
+      <td style="color:#666">${r.desig||'—'}</td>
+      <td style="text-align:right">${mf(r.earn)}</td>
+      <td style="text-align:right;color:#c0392b">−${mf(r.ded)}</td>
+      <td style="text-align:right;font-weight:700;color:var(--sage)">${mf(r.net)}</td>
+      <td style="text-align:right;color:#aaa;font-size:11px">${fmtDate(r.savedAt)}</td>
+      <td style="text-align:center;white-space:nowrap">
+        <button class="ha-btn ha-edit" onclick="loadRec('${r.id}')">✏ Edit</button>
+        <button class="ha-btn ha-pdf"  onclick="pdfRec('${r.id}')">⬇ PDF</button>
+      </td>
+    </tr>`).join('')||`<tr><td colspan="8" style="text-align:center;padding:22px;color:#bbb">No records match filter</td></tr>`;
+
+  $('hb_count').textContent=f.length;
+  $('hb_earn').textContent=mf(f.reduce((a,r)=>a+(+r.earn||0),0));
+  $('hb_net').textContent=mf(f.reduce((a,r)=>a+(+r.net||0),0));
+
+  const names=new Set(hist.map(r=>r.name).filter(Boolean));
+  const totalPaid=hist.reduce((a,r)=>a+(+r.net||0),0);
+  const latestM=hist.map(r=>cleanMonth(r.month)).filter(Boolean).sort().reverse()[0];
+  $('hs_records').textContent=hist.length;
+  $('hs_emp').textContent=names.size;
+  $('hs_paid').textContent='S$ '+totalPaid.toLocaleString('en',{maximumFractionDigits:0});
+  $('hs_latest').textContent=latestM ? fmtMonth(latestM) : '—';
+  updateBadge(hist.length);
+}
+
+function applyFilters(){ renderTable(getCached()); }
+function sortBy(col){ if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=false;} applyFilters(); }
+function clearFilters(){ $('hf_name').value='';$('hf_month').value='';$('hf_year').value=''; applyFilters(); }
+
+// ── FIXED loadRec: calls setEditMode instead of manually fiddling with button ──
+function loadRec(id){
+  const r = getCached().find(x => String(x.id) === String(id));
+  if(!r){ toast('⚠️ Record not found — try refreshing'); return; }
+
+  $('s_name').value        = r.name    || '';
+  $('s_nric').value        = r.nric    || '';
+  $('s_desig').value       = r.desig   || '';
+  $('s_month').value       = cleanMonth(r.month);
+  $('s_paydate').value     = cleanDate(r.paydate);
+  $('s_basic').value       = r.basic   || '';
+  $('s_ot').value          = r.ot      || '';
+  $('s_comm').value        = r.comm    || '';
+  $('s_allow').value       = r.allow   || '';
+  $('s_earn_other').value  = r.oe      || '';
+  $('s_cpf').value         = r.cpf     || '';
+  $('s_sdl').value         = r.sdl     || '';
+  $('s_ded_other').value   = r.od      || '';
+
+  calcSalary();
+  setEditMode(r.id, r.name, r.month);
+
+  // Switch to salary tab
+  showTab('salary', document.querySelector('.tab-btn'));
+  window.scrollTo({top:0, behavior:'smooth'});
+  toast(`📂 Editing: ${r.name} — ${fmtMonth(r.month)}`);
+}
+
+async function pdfRec(id){
+  const r=getCached().find(x=>String(x.id)===String(id));
+  if(!r) return;
+  // Backup current form values
+  const bk={};
+  ['s_name','s_nric','s_desig','s_month','s_paydate','s_basic','s_ot','s_comm',
+   's_allow','s_earn_other','s_cpf','s_sdl','s_ded_other'].forEach(i=>bk[i]=$(i).value);
+  const editBak = _editingId;
+
+  // Load record data temporarily for PDF
+  $('s_name').value=$('s_nric').value='' ; // prevent setEditMode triggering
+  $('s_name').value       = r.name    || '';
+  $('s_nric').value       = r.nric    || '';
+  $('s_desig').value      = r.desig   || '';
+  $('s_month').value      = cleanMonth(r.month);
+  $('s_paydate').value    = cleanDate(r.paydate);
+  $('s_basic').value      = r.basic   || '';
+  $('s_ot').value         = r.ot      || '';
+  $('s_comm').value       = r.comm    || '';
+  $('s_allow').value      = r.allow   || '';
+  $('s_earn_other').value = r.oe      || '';
+  $('s_cpf').value        = r.cpf     || '';
+  $('s_sdl').value        = r.sdl     || '';
+  $('s_ded_other').value  = r.od      || '';
+  calcSalary();
+
+  await genSalaryPDF();
+
+  // Restore form
+  Object.entries(bk).forEach(([k,v])=>$(k).value=v);
+  _editingId = editBak;
+  calcSalary();
+}
+
+// ══════════════════════════════════════════
+// QUOTATION
+// ══════════════════════════════════════════
+let rowId=0;
+function addItem(desc='',price='',qty=1){
+  rowId++;
+  const n=rowId, idx=$('q_body').children.length+1;
+  const tr=document.createElement('tr'); tr.id='qr'+n;
+  tr.innerHTML=`
+    <td style="text-align:center;color:#7a6e58;font-weight:600">${idx}</td>
+    <td><input type="text" placeholder="Description" value="${desc}" oninput="calcQ()"></td>
+    <td><input type="number" placeholder="0.00" value="${price}" min="0" step="0.01" oninput="calcQ()" style="text-align:right"></td>
+    <td><input type="number" value="${qty}" min="1" step="1" oninput="calcQ()" style="text-align:right"></td>
+    <td style="text-align:right;font-weight:600" id="rt${n}">S$ 0.00</td>
+    <td><button class="del-btn" onclick="delItem(${n})">✕</button></td>`;
+  $('q_body').appendChild(tr); calcQ();
+}
+function delItem(n){ $('qr'+n)?.remove(); [...$('q_body').children].forEach((r,i)=>r.cells[0].textContent=i+1); calcQ(); }
+function calcQ(){
+  let sub=0;
+  [...$('q_body').querySelectorAll('tr')].forEach(r=>{
+    const p=parseFloat(r.cells[2].querySelector('input').value)||0;
+    const q=parseFloat(r.cells[3].querySelector('input').value)||0;
+    const t=p*q; sub+=t;
+    const el=$('rt'+r.id.replace('qr',''));
+    if(el) el.textContent='S$ '+t.toFixed(2);
+  });
+  const gst=$('q_gst').checked?sub*.09:0;
+  $('q_sub').textContent=mf(sub);
+  $('q_gst_val').textContent=mf(gst);
+  $('q_grand').textContent=mf(sub+gst);
+}
+
+const DEF_ITEMS=[
+  ['Van with driver',5750,1],['Van with driver with Assistant',7750,1],
+  ['14ft box lorry w/o Tailgate with assistant',9750,1],
+  ['14ft box lorry with tailgate with assistant',10250,1],
+  ['24ft box lorry with assistant',11750,1],
+  ['24ft box lorry with tailgate with assistant',12750,1],
+  ['EV Van with driver',5000,1],
+];
+DEF_ITEMS.forEach(d=>addItem(d[0],d[1],d[2]));
+
+// ══════════════════════════════════════════
+// PDF IMAGE HELPERS
+// ══════════════════════════════════════════
+const imgCache={};
+function loadImg(src){
+  return new Promise(res=>{
+    if(imgCache[src]) return res(imgCache[src]);
+    const img=new Image(); img.crossOrigin='anonymous';
+    img.onload=()=>{
+      try{
+        const c=document.createElement('canvas');
+        c.width=img.naturalWidth; c.height=img.naturalHeight;
+        c.getContext('2d').drawImage(img,0,0);
+        const ext=src.endsWith('.jpg')?'JPEG':'PNG';
+        imgCache[src]={d:c.toDataURL('image/'+ext.toLowerCase()),ext,w:img.naturalWidth,h:img.naturalHeight};
+        res(imgCache[src]);
+      }catch(e){res(null);}
+    };
+    img.onerror=()=>res(null);
+    img.src=src;
+  });
+}
+async function drawHdr(doc){
+  const img=await loadImg('header.png');
+  if(img){const h=Math.min(38,210*img.h/img.w);doc.addImage(img.d,img.ext,0,0,210,h);return h;}
+  doc.setFillColor(26,26,46);doc.rect(0,0,210,36,'F');
+  doc.setFillColor(201,168,76);doc.rect(0,36,210,2,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(255,255,255);
+  doc.text('CHARAN LOGISTICS PTE LTD',105,13,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(200,190,160);
+  doc.text('101 Kitchener Road #03-14, Singapore 208511  |  HP: 91858511  |  charanlogistics@gmail.com',105,20,{align:'center'});
+  doc.text('Reg No: 202502540D',105,27,{align:'center'});
+  return 38;
+}
+async function drawFtr(doc){
+  // ── Constants ────────────────────────────────────────────
+  const W       = 210;
+  const M       = 20;          // left margin
+  const FOOTER_H = 58;         // total footer height in mm
+  const IMG_H    = 22;         // footer image strip height
+  const fy       = 297 - FOOTER_H;
+  const valX     = 52;         // value column always starts at 52 mm
+  const col2x    = 110;        // right column start
+/*
+  // ── Bank / company details ────────────────────────────────
+  const FOOTER = {
+    bankName    : 'DBS Bank Ltd',
+    bankAddr    : '12 Marina Boulevard, DBS Asia Central, Singapore 018982',
+    companyName : 'Charan Logistics Pte. Ltd.',
+    accountNo   : '072-906753-8',
+    payNowUEN   : '202502540D',
+  };
+
+  // ── White background for text section ────────────────────
+  doc.setFillColor(255,255,255);
+  doc.rect(0, fy, W, FOOTER_H - IMG_H, 'F');
+
+  // Thin top border line
+  doc.setDrawColor(210,225,245);
+  doc.setLineWidth(0.5);
+  doc.line(0, fy, W, fy);
+
+  // ── LEFT: Account Details ─────────────────────────────────
+  let ty = fy + 7;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.setTextColor(11,29,58);
+  doc.text('Account Details:', M, ty);
+  ty += 5.5;
+
+  const accRows = [
+    ['Bank Name',    FOOTER.bankName],
+    ['Bank Address', FOOTER.bankAddr],
+    ['Company Name', FOOTER.companyName],
+    ['Account No.',  FOOTER.accountNo],
+    ['PayNow UEN',   FOOTER.payNowUEN],
+  ];
+
+  doc.setFontSize(8.5);
+  accRows.forEach(([lbl, val]) => {
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(70,95,130);
+    doc.text(lbl + ' :', M, ty);
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(11,29,58);
+    const maxW = col2x - valX - 6;
+    const lines = doc.splitTextToSize(val, maxW);
+    doc.text(lines[0], valX, ty);
+    if(lines[1]){ ty += 4.3; doc.text(lines[1], valX, ty); }
+    ty += 5.0;
+  });
+
+  // ── RIGHT: Company name + QR code ────────────────────────
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.setTextColor(11,29,58);
+  doc.text('CHARAN LOGISTICS PTE. LTD.', col2x, fy + 8);
+
+  // QR code (PayNow)
+  const qsz = 30;
+  const qx  = W - M - qsz;
+  const qy  = fy + 3;
+  const qrImg = await loadImg('paynow_qr.png');
+  if(qrImg){
+    doc.addImage(qrImg.d, qrImg.ext, qx, qy, qsz, qsz, '', 'NONE');
+  } else {
+    doc.setFillColor(245,248,255);
+    doc.setDrawColor(190,210,235);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(qx, qy, qsz, qsz, 2, 2, 'FD');
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(6);
+    doc.setTextColor(160,180,210);
+    doc.text('PayNow QR', qx + qsz/2, qy + qsz/2 - 1, {align:'center'});
+    doc.text(FOOTER.payNowUEN, qx + qsz/2, qy + qsz/2 + 4, {align:'center'});
+  }
+  */
+
+  // ── FOOTER IMAGE STRIP (bottom strip) ────────────────────
+  const imgStripY = 297 - IMG_H;
+  const ftrImg = await loadImg('footer.png');
+  if(ftrImg){
+    doc.addImage(ftrImg.d, ftrImg.ext, 0, imgStripY, W, IMG_H, '', 'NONE');
+  } else {
+    doc.setFillColor(19,48,94);
+    doc.rect(0, imgStripY, W, IMG_H, 'F');
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8);
+    doc.setTextColor(180,200,240);
+    doc.text('CHARAN LOGISTICS PTE LTD  ·  101 Kitchener Road #03-14, Singapore 208511  ·  Reg No: 202502540D', W/2, imgStripY + IMG_H/2 + 1.5, {align:'center'});
+  }
+
+  return FOOTER_H;
+}
+
+// ══════════════════════════════════════════
+// SALARY PDF
+// ══════════════════════════════════════════
+async function genSalaryPDF(){
+  const name=$('s_name').value.trim()||'—', nric=$('s_nric').value.trim()||'—';
+  const desig=$('s_desig').value.trim()||'—';
+  const month=cleanMonth($('s_month').value)||'';
+  const paydate=cleanDate($('s_paydate').value)||'—';
+  const basic=nv('s_basic'),ot=nv('s_ot'),comm=nv('s_comm'),allow=nv('s_allow'),oe=nv('s_earn_other');
+  const cpf=nv('s_cpf'),sdl=nv('s_sdl'),od=nv('s_ded_other');
+  const earn=basic+ot+comm+allow+oe, ded=cpf+sdl+od, net=earn-ded;
+  const ml=fmtMonth(month);
+
+  function words(n){
+    const O=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+    const T=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+    if(!n) return 'Zero Dollars Only';
+    const iv=Math.floor(n),cv=Math.round((n-iv)*100);
+    let w='';
+    if(iv>=1000)w+=O[Math.floor(iv/1000)]+' Thousand ';
+    const h=Math.floor((iv%1000)/100);if(h)w+=O[h]+' Hundred ';
+    const r=iv%100;
+    if(r>=20)w+=T[Math.floor(r/10)]+' '+(O[r%10]||'');else if(r)w+=O[r];
+    w=w.trim()+' Dollars';
+    if(cv>0){const cc=cv>19?T[Math.floor(cv/10)]+' '+(O[cv%10]||''):O[cv];w+=' and '+cc.trim()+' Cents';}
+    return w.trim()+' Only';
+  }
+
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({format:'a4',unit:'mm'});
+  doc.setFillColor(250,247,240);doc.rect(0,0,210,297,'F');
+  const hH=await drawHdr(doc); await drawFtr(doc);
+
+  doc.setFillColor(201,168,76);doc.roundedRect(70,hH+4,70,10,2,2,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(26,26,46);
+  doc.text('SALARY SLIP',105,hH+11,{align:'center'});
+
+  let y=hH+20;
+  doc.setFillColor(255,255,255);doc.setDrawColor(212,201,168);doc.setLineWidth(.4);
+  doc.roundedRect(14,y,182,34,3,3,'FD');
+  doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(120,110,88);
+  doc.text('EMPLOYEE NAME',20,y+8);doc.text('NRIC NO.',20,y+17);doc.text('DESIGNATION',20,y+26);
+  doc.text('PAYMENT DATE',108,y+8);doc.text('SALARY MONTH',108,y+17);
+  doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(26,26,46);
+  doc.text(name,62,y+8);doc.text(nric,62,y+17);doc.text(desig,62,y+26);
+  doc.text(paydate,152,y+8);doc.text(ml,152,y+17);
+
+  y+=40;const cw=91;
+  doc.setFillColor(255,255,255);
+  doc.roundedRect(14,y,cw,90,3,3,'FD');doc.roundedRect(14+cw,y,cw,90,3,3,'FD');
+  doc.setFillColor(26,26,46);doc.rect(14,y,cw,10,'F');doc.rect(14+cw,y,cw,10,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(201,168,76);
+  doc.text('EARNINGS',18,y+7);doc.text('S$',97,y+7,{align:'right'});
+  doc.text('DEDUCTIONS',14+cw+4,y+7);doc.text('S$',14+cw+cw-5,y+7,{align:'right'});
+
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  let ry=y+17;
+  [['Basic Pay',basic],['Overtime',ot],['Commission',comm],['Allowance',allow],['Other',oe]].forEach(([l,v])=>{
+    doc.setTextColor(26,26,46);doc.text(l,18,ry);
+    doc.setTextColor(v>0?74:160,v>0?103:160,v>0?65:160);doc.text(v.toFixed(2),97,ry,{align:'right'});ry+=12;
+  });
+  ry=y+17;
+  [['CPF Employee',cpf],['SDL / SHG',sdl],['Other Deductions',od]].forEach(([l,v])=>{
+    doc.setTextColor(26,26,46);doc.text(l,14+cw+4,ry);
+    doc.setTextColor(v>0?139:160,v>0?58:160,v>0?46:160);doc.text(v.toFixed(2),14+cw+cw-5,ry,{align:'right'});ry+=12;
+  });
+
+  doc.setFillColor(240,235,220);doc.rect(14,y+79,cw,11,'F');doc.rect(14+cw,y+79,cw,11,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(26,26,46);
+  doc.text('TOTAL EARNINGS',18,y+86);doc.text(earn.toFixed(2),97,y+86,{align:'right'});
+  doc.text('TOTAL DEDUCTIONS',14+cw+4,y+86);doc.setTextColor(139,58,46);doc.text(ded.toFixed(2),14+cw+cw-5,y+86,{align:'right'});
+
+  y+=82;
+  doc.setFillColor(26,26,46);doc.roundedRect(14,y,182,26,3,3,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(200,190,160);
+  doc.text('NET SALARY PAYABLE',20,y+7);
+  doc.setFontSize(17);doc.setTextColor(201,168,76);
+  doc.text(mf(net),190,y+17,{align:'right'});
+
+  y+=32;
+  doc.setFillColor(255,255,255);doc.setDrawColor(212,201,168);doc.roundedRect(14,y,182,16,3,3,'FD');
+  doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(120,110,88);doc.text('AMOUNT IN WORDS:',18,y+5.5);
+  doc.setFont('helvetica','italic');doc.setFontSize(8.5);doc.setTextColor(26,26,46);doc.text(words(net),18,y+13);
+
+/*  y+=22;
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(100,90,75);
+  doc.text('Approved by:',20,y);doc.setDrawColor(180,170,150);doc.line(20,y+13,88,y+13);
+  doc.text('Received by:',112,y);doc.line(112,y+13,192,y+13);
+*/
+  doc.save(`SalarySlip_${name.replace(/\s+/g,'_')}_${ml.replace(/\s/g,'_')}.pdf`);
+  toast('✅ PDF downloaded!');
+}
+
+// ══════════════════════════════════════════
+// QUOTATION PDF
+// ══════════════════════════════════════════
+async function genQuotPDF(){
+  const qno=$('q_num').value||'QT-001',qdate=$('q_date').value||today;
+  const client=$('q_client').value||'—',addr=$('q_addr').value||'',notes=$('q_notes').value||'';
+  const useGst=$('q_gst').checked;
+  const rows=[];
+  [...$('q_body').querySelectorAll('tr')].forEach((r,i)=>{
+    const desc=r.cells[1].querySelector('input').value;
+    const price=parseFloat(r.cells[2].querySelector('input').value)||0;
+    const qty=parseFloat(r.cells[3].querySelector('input').value)||1;
+    if(desc||price)rows.push({n:i+1,desc,price,qty,total:price*qty});
+  });
+  const sub=rows.reduce((a,r)=>a+r.total,0),gst=useGst?sub*.09:0,grand=sub+gst;
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({format:'a4',unit:'mm'});
+  doc.setFillColor(250,247,240);doc.rect(0,0,210,297,'F');
+  const hH=await drawHdr(doc);await drawFtr(doc);
+  doc.setFillColor(201,168,76);doc.roundedRect(73,hH+4,64,10,2,2,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(26,26,46);
+  doc.text('QUOTATION',105,hH+11,{align:'center'});
+  let y=hH+20;
+  doc.setFillColor(255,255,255);doc.setDrawColor(212,201,168);doc.setLineWidth(.4);
+  doc.roundedRect(14,y,182,26,3,3,'FD');
+  doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(120,110,88);
+  doc.text('QUOTATION NO.',20,y+8);doc.text('DATE',20,y+18);doc.text('CLIENT',108,y+8);doc.text('ADDRESS',108,y+18);
+  doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(26,26,46);
+  doc.text(qno,66,y+8);doc.text(qdate,66,y+18);doc.text(client,138,y+8);doc.text((doc.splitTextToSize(addr,58)[0]||''),138,y+18);
+  y+=32;doc.setFillColor(26,26,46);doc.rect(14,y,182,9,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(201,168,76);
+  doc.text('NO.',18,y+6);doc.text('DESCRIPTION',30,y+6);doc.text('UNIT PRICE',132,y+6,{align:'right'});doc.text('QTY',150,y+6,{align:'right'});doc.text('TOTAL (S$)',196,y+6,{align:'right'});
+  y+=9;doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(26,26,46);
+  rows.forEach((r,i)=>{
+    const bg=i%2===0?[255,255,255]:[245,240,232];doc.setFillColor(...bg);doc.rect(14,y,182,10,'F');
+    doc.setDrawColor(220,212,196);doc.line(14,y+10,196,y+10);
+    doc.text(String(r.n),20,y+7,{align:'center'});doc.text(doc.splitTextToSize(r.desc,96)[0],30,y+7);
+    doc.text(r.price.toFixed(2),132,y+7,{align:'right'});doc.text(String(r.qty),150,y+7,{align:'right'});doc.text(r.total.toFixed(2),196,y+7,{align:'right'});y+=10;
+  });
+  y+=5;
+  [{l:'Subtotal',v:sub,b:false},...(useGst?[{l:'GST (9%)',v:gst,b:false}]:[]),{l:'GRAND TOTAL',v:grand,b:true}].forEach(t=>{
+    if(t.b){doc.setFillColor(26,26,46);doc.rect(118,y,78,11,'F');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(201,168,76);doc.text(t.l,124,y+7.5);doc.text(mf(t.v),196,y+7.5,{align:'right'});y+=11;}
+    else{doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(100,90,75);doc.text(t.l,124,y+6);doc.setTextColor(26,26,46);doc.text(mf(t.v),196,y+6,{align:'right'});y+=9;}
+  });
+  if(notes){y+=6;const nl=doc.splitTextToSize(notes,172);doc.setFillColor(255,255,255);doc.setDrawColor(212,201,168);doc.roundedRect(14,y,182,8+nl.length*5.5,3,3,'FD');doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(120,110,88);doc.text('NOTES & TERMS',18,y+6);doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(50,50,50);doc.text(nl,18,y+12);}
+  doc.save(`Quotation_${qno}_${client.replace(/\s+/g,'_')}.pdf`);
+  toast('✅ Quotation PDF downloaded!');
+}
+
+
+// ══════════════════════════════════════════
+// APPS SCRIPT
+// ══════════════════════════════════════════
+const APPS_SCRIPT = `// Charan Logistics — Salary Data API
+// Deploy → New Deployment → Web App
+// Execute as: Me | Who has access: Anyone
+
+const SHEET = 'SalaryData';
+
+function doGet(e) {
+  const action = (e.parameter && e.parameter.action) || 'getAll';
+  if (action === 'ping')   return ok({ status: 'ok' });
+  if (action === 'getAll') return ok({ records: getAll() });
+  return ok({ error: 'unknown action' });
+}
+
+function doPost(e) {
+  const d = JSON.parse(e.postData.contents);
+  if (d.action === 'save')   { save(d.record); return ok({ status: 'saved' }); }
+  if (d.action === 'delete') { del(d.id);      return ok({ status: 'deleted' }); }
+  if (d.action === 'update') { del(d.record.id); save(d.record); return ok({ status: 'updated' }); }
+  return ok({ error: 'unknown action' });
+}
+
+function sheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(SHEET);
+    const h = ['id','name','nric','desig','month','paydate',
+               'basic','ot','comm','allow','oe',
+               'cpf','sdl','od','earn','ded','net','savedAt'];
+    sh.appendRow(h);
+    sh.getRange(1,1,1,h.length)
+      .setFontWeight('bold')
+      .setBackground('#1a1a2e')
+      .setFontColor('#c9a84c');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function getAll() {
+  const sh = sheet();
+  const rows = sh.getDataRange().getValues();
+  if (rows.length <= 1) return [];
+  const headers = rows[0];
+  return rows.slice(1)
+    .map(row => {
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = row[i]);
+      return obj;
+    })
+    .sort((a, b) => (b.month > a.month ? 1 : -1));
+}
+
+function save(rec) {
+  const sh = sheet();
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  sh.appendRow(headers.map(h => rec[h] !== undefined ? rec[h] : ''));
+}
+
+function del(id) {
+  const sh = sheet();
+  const data = sh.getDataRange().getValues();
+  const idCol = data[0].indexOf('id');
+  for (let i = data.length - 1; i >= 1; i--) {
+    if (String(data[i][idCol]) === String(id)) {
+      sh.deleteRow(i + 1);
+      break;
+    }
+  }
+}
+
+function ok(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+function copyScript(){
+  $('script_ta').select();
+  document.execCommand('copy');
+  $('copy-done').style.display='inline';
+  setTimeout(()=>$('copy-done').style.display='none',2500);
+  toast('📋 Script copied!');
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+$('q_date').value    = today;
+$('s_paydate').value = today;
+$('s_month').value   = today.slice(0,7);
+$('script_ta').value = APPS_SCRIPT;
+if(getUrl()) $('gs_url_input').value = getUrl();
+
+updateSalaryTabUI();
+updateSettingsUI();
+updateBadge(getCached().length);
+</script>
+</body>
+</html>
