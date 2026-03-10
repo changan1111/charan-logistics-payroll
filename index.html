@@ -489,24 +489,26 @@ function cleanDate(raw){
 
 function fmtMonth(raw){
   if(!raw) return '—';
-  // Normalise 2026/02 or 2026-02 or full ISO date
-  let clean = String(raw).trim();
+  let s = String(raw).trim();
   
-  // If Sheets already mangled it to ISO date, extract correctly
-  if(clean.includes('T')){
-    const d = new Date(clean);
-    // Add 8 hours for Singapore timezone to correct UTC shift
+  // If ISO date from Sheets, extract with SGT offset
+  if(s.includes('T')){
+    const d = new Date(s);
     d.setHours(d.getHours() + 8);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    clean = yyyy + '/' + mm;
+    s = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
   }
   
-  clean = clean.replace('-','').replace('/','-').slice(0,7);
-  const [yyyy, mm] = clean.split('-');
-  const d = new Date(Date.UTC(+yyyy, +mm - 1, 1));
+  // Now s should be "2026-02"
+  const parts = s.slice(0, 7).split('-');
+  if(parts.length < 2) return '—';
+  
+  const yyyy = parseInt(parts[0]);
+  const mm   = parseInt(parts[1]);
+  if(isNaN(yyyy) || isNaN(mm)) return '—';
+  
+  const d = new Date(Date.UTC(yyyy, mm - 1, 1));
   if(isNaN(d)) return '—';
-  return d.toLocaleString('default', { month:'long', year:'numeric', timeZone:'UTC' });
+  return d.toLocaleString('default', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
 function fmtDate(raw){
