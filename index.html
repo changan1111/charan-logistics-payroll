@@ -717,8 +717,9 @@ async function saveToHistory(){
   const nric    = $('s_nric').value.trim();
   const desig   = $('s_desig').value.trim();
   const paydate = $('s_paydate').value;
-  const month   = cleanMonth($('s_month').value);
-
+  const rawMonth = $('s_month').value; // e.g. "2026-02"
+  const month = rawMonth ? rawMonth.slice(0, 7) : '';
+  
   if(!name)  { toast('⚠️ Enter employee name'); return; }
   if(!month) { toast('⚠️ Select a salary month'); return; }
   if(!isConnected()){
