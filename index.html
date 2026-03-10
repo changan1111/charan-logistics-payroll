@@ -22,6 +22,11 @@ header h1{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;co
 header h1 span{color:var(--gold);}
 .hdr-sub{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:.1em;text-transform:uppercase;margin-left:56px;}
 
+input.error {
+  border-color: #e53935 !important;
+  box-shadow: 0 0 0 3px rgba(229,57,53,0.15) !important;
+}
+  
 /* TABS */
 .tab-bar{background:var(--ink);border-top:1px solid rgba(255,255,255,0.08);}
 .tab-bar-inner{max-width:980px;margin:0 auto;padding:0 28px;display:flex;gap:2px;}
@@ -731,8 +736,28 @@ async function saveToHistory(){
   const rawMonth = $('s_month').value; // e.g. "2026-02"
   const month = rawMonth ? rawMonth.slice(0, 7).replace('-', '/') : '';
   
-  if(!name)  { toast('⚠️ Enter employee name'); return; }
-  if(!month) { toast('⚠️ Select a salary month'); return; }
+// Clear previous errors
+['s_name','s_month','s_basic'].forEach(id => $(id).classList.remove('error'));
+
+if(!name){
+  $('s_name').classList.add('error');
+  toast('⚠️ Employee Name is required');
+  $('s_name').focus();
+  return;
+}
+if(!month){
+  $('s_month').classList.add('error');
+  toast('⚠️ Salary Month is required');
+  $('s_month').focus();
+  return;
+}
+if(!nv('s_basic') || nv('s_basic') <= 0){
+  $('s_basic').classList.add('error');
+  toast('⚠️ Basic Pay is required');
+  $('s_basic').focus();
+  return;
+}
+
   if(!isConnected()){
     toast('⚠️ Connect Google Sheets first — go to ⚙️ Settings');
     showTab('settings', document.querySelectorAll('.tab-btn')[3]);
@@ -1388,6 +1413,10 @@ function copyScript(){
   toast('📋 Script copied!');
 }
 
+['s_name','s_month','s_basic'].forEach(id => {
+  $(id).addEventListener('input',  () => $(id).classList.remove('error'));
+  $(id).addEventListener('change', () => $(id).classList.remove('error'));
+});
 // ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
