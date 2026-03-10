@@ -897,7 +897,7 @@ function renderTable(hist){
   $('hs_records').textContent=hist.length;
   $('hs_emp').textContent=names.size;
   $('hs_paid').textContent='S$ '+totalPaid.toLocaleString('en',{maximumFractionDigits:0});
-  $('hs_latest').textContent=latestM ? fmtMonth(latestM) : '—';
+  $('hs_latest').textContent = latestM ? fmtMonth(latestM) : (hist.length ? fmtMonth(hist[0].month) : '—');
   updateBadge(hist.length);
 }
 
