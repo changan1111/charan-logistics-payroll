@@ -458,7 +458,8 @@ function showTab(name,btn){
 function cleanMonth(raw){
   if(!raw) return '';
   let s = String(raw).trim();
-  
+  console.log('cleanMonth input:', s); // ← add this to debug
+
   // ISO date from Sheets — extract with SGT offset
   if(s.includes('T')){
     const d = new Date(s);
