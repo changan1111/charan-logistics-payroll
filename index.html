@@ -644,6 +644,10 @@ async function fetchFromSheets(manual=false){
     const data = await res.json();
     const recs = Array.isArray(data) ? data : (data.records||[]);
     localStorage.setItem(CACHE_KEY, JSON.stringify(recs));
+    // ← ADD THESE 3 LINES
+   const latestM = recs.map(r => cleanMonth(r.month)).filter(Boolean).sort().reverse()[0];
+   if(latestM && !$('hf_month').value) $('hf_month').value = latestM; // only set if not already filtered
+    applyFilters(); // apply the filter immediately
     renderTable(recs);
     const ts=new Date().toLocaleTimeString('en-SG',{hour:'2-digit',minute:'2-digit'});
     setSyncStatus('ok',`Live from Google Sheets · ${recs.length} records · ${ts}`);
