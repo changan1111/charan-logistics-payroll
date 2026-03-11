@@ -430,6 +430,15 @@ textarea{resize:vertical;min-height:60px;}
 </div>
 </div><!-- /main -->
 
+<div id="panel-settings" class="panel">
+
+  <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+    <button class="btn btn-outline-red" onclick="sessionStorage.removeItem('cl_auth'); window.location.replace('./login.html');">
+      🚪 Sign Out
+    </button>
+  </div>
+
+  <div class="conn-card ok" id="conn-ok">
 <div id="toast"><span id="toast_msg"></span></div>
 
 
