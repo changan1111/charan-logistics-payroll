@@ -434,6 +434,21 @@ textarea{resize:vertical;min-height:60px;}
 
 
 <script>
+
+// Prevent back button into dashboard after logout
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted || performance.getEntriesByType('navigation')[0]?.type === 'back_forward') {
+    if (sessionStorage.getItem('cl_auth') !== '1') {
+      window.location.replace('./login.html');
+    }
+  }
+});
+  
+(function() {
+  if (sessionStorage.getItem('cl_auth') !== '1') {
+    window.location.replace('./login.html');
+  }
+})();
 // ══════════════════════════════════════════
 // UTILS
 // ══════════════════════════════════════════
@@ -1429,6 +1444,15 @@ if(getUrl()) $('gs_url_input').value = getUrl();
 updateSalaryTabUI();
 updateSettingsUI();
 updateBadge(getCached().length);
+
+window.addEventListener('DOMContentLoaded', () => {
+  const btn = document.createElement('button');
+  btn.textContent = '🚪 Sign Out';
+  btn.style.cssText = 'position:fixed;bottom:18px;right:18px;z-index:9999;padding:8px 14px;background:#0d1117;color:#d4902a;border:1px solid rgba(212,144,42,0.4);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;';
+  btn.onclick = () => { sessionStorage.removeItem('cl_auth'); window.location.replace('./login.html'); };
+  document.body.appendChild(btn);
+});
+
 </script>
 </body>
 </html>
