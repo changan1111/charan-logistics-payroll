@@ -25,6 +25,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Inject Password Hash
+        run: |
+          HASH=$(echo -n "${{ secrets.ACCESS_PASSWORD }}" | sha256sum | awk '{print $1}')
+          sed -i "s|%%ACCESS_HASH%%|$HASH|g" login.html
+
       - name: Inject Google Sheets URL
         run: |
           sed -i 's|__WEBAPP_URL_PLACEHOLDER__|${{ secrets.WEBAPP_URL }}|g' index.html
