@@ -1444,14 +1444,10 @@ if(getUrl()) $('gs_url_input').value = getUrl();
 updateSalaryTabUI();
 updateSettingsUI();
 updateBadge(getCached().length);
-
-
-  const btn = document.createElement('button');
-  btn.textContent = '🚪 Sign Out';
-  btn.style.cssText = 'position:fixed;bottom:18px;right:18px;z-index:9999;padding:8px 14px;background:#0d1117;color:#d4902a;border:1px solid rgba(212,144,42,0.4);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;';
-  btn.onclick = () => { sessionStorage.removeItem('cl_auth'); window.location.replace('./login.html'); };
-  document.body.appendChild(btn);
-
 </script>
+  <button onclick="sessionStorage.removeItem('cl_auth'); window.location.replace('./login.html');" 
+  style="position:fixed;bottom:18px;right:18px;z-index:9999;padding:8px 14px;background:#0d1117;color:#d4902a;border:1px solid rgba(212,144,42,0.4);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">
+  🚪 Sign Out
+  </button>
 </body>
 </html>
