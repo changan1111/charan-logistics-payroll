@@ -12,7 +12,7 @@
       --amber: #d4902a; --amber2: #f0b84a;
       --cream: #f5efe0; --muted: #7a8599; --dim: #3d4a5c; --red: #e05252;
     }
-    html, body { height: 100%; overflow: hidden; font-family: 'IBM Plex Sans', sans-serif; background: var(--ink); }
+    html, body { height: 100%; overflow-x: hidden; overflow-y: auto; font-family: 'IBM Plex Sans', sans-serif; background: var(--ink); }
 
     .bg-base {
       position: fixed; inset: 0; z-index: 0;
@@ -32,7 +32,19 @@
       background: radial-gradient(circle, rgba(28,35,51,0.8) 0%, transparent 70%);
       border-radius: 50%;
     }
+  .collage-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
+  .collage-wrap canvas {
+    border-radius: 50%;
+  }
+.truck-img {
+  height: 125px;
+  width: 125px;
+}
     .page {
       position: relative; z-index: 1; min-height: 100vh;
       display: flex; align-items: center; justify-content: center; padding: 24px;
@@ -182,10 +194,11 @@
   <div class="card">
     <div class="card-inner">
 
-      <div class="header">
-        <div class="truck-wrap">🚚</div>
-        <div class="co-name">Charan Logistics<br>Pte Ltd</div>
-        <div class="co-reg">Reg No: 202502540D · Singapore</div>
+<div class="collage-wrap">
+<canvas id="circleCollage" width="300" height="300"></canvas>
+</div>
+        <div class="form-title">Charan Logistics Pte Ltd</div>
+        <div class="form-title">Reg No: 202502540D · Singapore</div>
         <div class="divider">
           <div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div>
         </div>
@@ -194,7 +207,6 @@
       <!-- Login form -->
       <div id="formArea">
         <div class="form-title">🔒 Authorised Access Only</div>
-
         <div class="error-banner" id="errBanner">
           <span>⚠</span><span id="errText">Incorrect password.</span>
         </div>
@@ -251,6 +263,96 @@ window.addEventListener('pageshow', function(e) {
     }
   }
 });
+
+    // =============================================
+  // CHANGE FILENAMES HERE IF NEEDED
+  // =============================================
+  const IMAGES = [
+    "Truck1.jpeg",   // top-left
+    "Truck2.jpeg",   // top-right
+    "Truck3.jpeg",   // bottom-left
+    "Truck4.jpeg",   // bottom-right
+  ];
+  // =============================================
+
+const SIZE = 300, CX = 150, CY = 150, R = 150, BORDER = 6;
+  const canvas = document.getElementById('circleCollage');
+  const ctx = canvas.getContext('2d');
+
+const quads = [
+  { x: 0,   y: 0,   w: CX, h: CY }, // top-left
+  { x: CX,  y: 0,   w: CX, h: CY }, // top-right
+  { x: 0,   y: CY,  w: CX, h: CY }, // bottom-left
+  { x: CX,  y: CY,  w: CX, h: CY }, // bottom-right
+];
+
+  function loadImage(src) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  }
+
+  function drawCover(img, qx, qy, qw, qh) {
+    const ir = img.width / img.height;
+    const qr = qw / qh;
+    let sw, sh, sx, sy;
+    if (ir > qr) {
+      sh = img.height; sw = sh * qr;
+      sx = (img.width - sw) / 2; sy = 0;
+    } else {
+      sw = img.width; sh = sw / qr;
+      sx = 0; sy = (img.height - sh) / 2;
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, qx, qy, qw, qh);
+  }
+
+  async function draw() {
+    const loaded = await Promise.all(IMAGES.map(loadImage));
+
+    // Clip to circle
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(CX, CY, R - BORDER / 2, 0, Math.PI * 2);
+    ctx.clip();
+
+    // Draw quadrants
+    quads.forEach((q, i) => {
+      if (loaded[i]) {
+        drawCover(loaded[i], q.x, q.y, q.w, q.h);
+      } else {
+        ctx.fillStyle = '#122240';
+        ctx.fillRect(q.x, q.y, q.w, q.h);
+      }
+    });
+
+    // Divider cross lines
+    ctx.strokeStyle = 'rgba(0, 20, 50, 0.7)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(CX, 0); ctx.lineTo(CX, SIZE);
+    ctx.moveTo(0, CY); ctx.lineTo(SIZE, CY);
+    ctx.stroke();
+
+    ctx.restore();
+
+    // Gold border ring
+    ctx.beginPath();
+    ctx.arc(CX, CY, R - BORDER / 2, 0, Math.PI * 2);
+    ctx.strokeStyle = '#D4AF37';
+    ctx.lineWidth = BORDER;
+    ctx.stroke();
+
+    // Gold center dot
+    ctx.beginPath();
+    ctx.arc(CX, CY, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#D4AF37';
+    ctx.fill();
+  }
+
+  draw();
   // ─────────────────────────────────────────────────────────
   //  Hash injected automatically by GitHub Actions on deploy.
   //  Do NOT edit this line manually.
