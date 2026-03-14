@@ -815,7 +815,7 @@ if(!nv('s_basic') || nv('s_basic') <= 0){
 
   const record = {
     id: recordId,
-    name, nric, desig, month, paydate,
+    name, nric, desig, month, paydate,referenceNumber
     basic, ot, comm, allow, oe,
     cpf, sdl, od,
     earn, ded, net,
@@ -978,6 +978,7 @@ function loadRec(id){
   $('s_desig').value       = r.desig   || '';
   $('s_month').value       = cleanMonth(r.month);
   $('s_paydate').value     = cleanDate(r.paydate);
+  $('s_referenceNumber').value = r.referenceNumber || '';
   $('s_basic').value       = r.basic   || '';
   $('s_ot').value          = r.ot      || '';
   $('s_comm').value        = r.comm    || '';
@@ -1012,7 +1013,7 @@ async function pdfRec(id){
   $('s_desig').value      = r.desig   || '';
   $('s_month').value      = cleanMonth(r.month);
   $('s_paydate').value    = cleanDate(r.paydate);
-  $('s_referenceNumber').value    = cleanDate(r.referenceNumber);
+  $('s_referenceNumber').value = r.referenceNumber || '';
   $('s_basic').value      = r.basic   || '';
   $('s_ot').value         = r.ot      || '';
   $('s_comm').value       = r.comm    || '';
@@ -1218,7 +1219,7 @@ async function genSalaryPDF(){
   const desig=$('s_desig').value.trim()||'—';
   const month=cleanMonth($('s_month').value)||'';
   const paydate=cleanDate($('s_paydate').value)||'—';
-  const referenceNumber=cleanDate($('s_referenceNumber').value)||'—';
+  const referenceNumber=$('s_referenceNumber').value.trim()||'—';
   const basic=nv('s_basic'),ot=nv('s_ot'),comm=nv('s_comm'),allow=nv('s_allow'),oe=nv('s_earn_other');
   const cpf=nv('s_cpf'),sdl=nv('s_sdl'),od=nv('s_ded_other');
   const earn=basic+ot+comm+allow+oe, ded=cpf+sdl+od, net=earn-ded;
@@ -1256,7 +1257,7 @@ async function genSalaryPDF(){
   doc.text('PAYMENT DATE',108,y+8);doc.text('SALARY MONTH',108,y+17);
   doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(26,26,46);
   doc.text(name,62,y+8);doc.text(nric,62,y+17);doc.text(desig,62,y+26);
-  doc.text(paydate,152,y+8);doc.text(ml,152,y+17);
+  doc.text(paydate,152,y+8);doc.text(ml,152,y+17);doc.text(referenceNumber,152,y+26);
 
   y+=40;const cw=91;
   doc.setFillColor(255,255,255);
