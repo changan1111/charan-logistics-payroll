@@ -235,6 +235,7 @@ textarea{resize:vertical;min-height:60px;}
       <div class="field"><label>Designation</label><input type="text" id="s_desig" placeholder="e.g. Driver"></div>
       <div class="field"><label>Salary Month</label><input type="month" id="s_month" placeholder="Select month"></div>
       <div class="field"><label>Payment Date</label><input type="date" id="s_paydate"></div>
+      <div class="field"><label>Bank Reference Number</label><input type="text" id="s_referenceNumber" placeholder="e.g. Driver"></div>
     </div>
   </div>
 
@@ -759,6 +760,8 @@ async function saveToHistory(){
   const paydate = $('s_paydate').value;
   const rawMonth = $('s_month').value; // e.g. "2026-02"
   const month = rawMonth ? rawMonth.slice(0, 7).replace('-', '/') : '';
+  const referenceNumber   = $('s_referenceNumber').value.trim();
+
   
 // Clear previous errors
 ['s_name','s_month','s_basic'].forEach(id => $(id).classList.remove('error'));
@@ -998,7 +1001,7 @@ async function pdfRec(id){
   if(!r) return;
   // Backup current form values
   const bk={};
-  ['s_name','s_nric','s_desig','s_month','s_paydate','s_basic','s_ot','s_comm',
+  ['s_name','s_nric','s_desig','s_month','s_paydate','s_referenceNumber','s_basic','s_ot','s_comm',
    's_allow','s_earn_other','s_cpf','s_sdl','s_ded_other'].forEach(i=>bk[i]=$(i).value);
   const editBak = _editingId;
 
@@ -1009,6 +1012,7 @@ async function pdfRec(id){
   $('s_desig').value      = r.desig   || '';
   $('s_month').value      = cleanMonth(r.month);
   $('s_paydate').value    = cleanDate(r.paydate);
+  $('s_referenceNumber').value    = cleanDate(r.referenceNumber);
   $('s_basic').value      = r.basic   || '';
   $('s_ot').value         = r.ot      || '';
   $('s_comm').value       = r.comm    || '';
@@ -1214,6 +1218,7 @@ async function genSalaryPDF(){
   const desig=$('s_desig').value.trim()||'—';
   const month=cleanMonth($('s_month').value)||'';
   const paydate=cleanDate($('s_paydate').value)||'—';
+  const referenceNumber=cleanDate($('s_referenceNumber').value)||'—';
   const basic=nv('s_basic'),ot=nv('s_ot'),comm=nv('s_comm'),allow=nv('s_allow'),oe=nv('s_earn_other');
   const cpf=nv('s_cpf'),sdl=nv('s_sdl'),od=nv('s_ded_other');
   const earn=basic+ot+comm+allow+oe, ded=cpf+sdl+od, net=earn-ded;
